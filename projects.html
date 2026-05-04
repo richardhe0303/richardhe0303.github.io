@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — Richard He</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+<style>
+:root {
+  --bg-primary:#08080d; --bg-card:#111118; --border:#1e1e2a;
+  --accent:#3dd8c5; --accent-dim:rgba(61,216,197,0.12); --accent-glow:rgba(61,216,197,0.25);
+  --text-primary:#e4e4ed; --text-secondary:#8888a0; --text-muted:#55556a; --white:#ffffff;
+  --font-display:'Syne',sans-serif; --font-body:'DM Sans',sans-serif; --font-mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;opacity:0.025;z-index:9999;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 0;background:rgba(8,8,13,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+nav .container{display:flex;align-items:center;justify-content:space-between;}
+nav .logo{font-family:var(--font-display);font-weight:800;font-size:1.15rem;color:var(--white);text-decoration:none;}
+nav ul{list-style:none;display:flex;gap:2rem;}
+nav a{color:var(--text-secondary);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color 0.2s;}
+nav a:hover,nav a.active{color:var(--accent);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text-primary);}
+.page-header{padding-top:8rem;padding-bottom:3rem;border-bottom:1px solid var(--border);}
+.section-label{font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.75rem;}
+.section-title{font-family:var(--font-display);font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:1rem;}
+.section-subtitle{color:var(--text-secondary);max-width:620px;}
+footer{padding:2rem 0;border-top:1px solid var(--border);text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);}
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+@media(max-width:900px){nav ul{display:none;}nav ul.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(8,8,13,0.97);padding:1.5rem 2rem;gap:1rem;border-bottom:1px solid var(--border);}.hamburger{display:flex;}}
+
+#projects{padding:4rem 0 6rem;}
+.project-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:3rem;transition:border-color 0.3s,box-shadow 0.3s;}
+.project-card:hover{border-color:rgba(61,216,197,0.3);box-shadow:0 8px 40px rgba(0,0,0,0.4);}
+.project-card-inner{display:grid;grid-template-columns:1fr 1fr;min-height:420px;}
+.project-card-inner.reverse{direction:rtl;}
+.project-card-inner.reverse>*{direction:ltr;}
+.project-media{position:relative;height:420px;overflow:hidden;background:#0d0d14;display:flex;align-items:center;justify-content:center;}
+.project-media img{width:100%;height:100%;object-fit:cover;}
+.project-media img.cad-render{object-fit:contain;padding:0;filter:drop-shadow(0 18px 28px rgba(0,0,0,0.45));}
+.project-media img.compactor-render{transform:scale(1.27);transform-origin:center;}
+.project-media img.pitcher-render{object-fit:contain;padding:1.5rem;filter:drop-shadow(0 18px 28px rgba(0,0,0,0.45));}
+.project-media .placeholder-img{font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);text-align:center;padding:2rem;}
+.project-media .placeholder-img .icon{font-size:2.5rem;margin-bottom:0.5rem;opacity:0.3;}
+.project-content{padding:2.5rem;display:flex;flex-direction:column;justify-content:center;}
+.project-tag{display:inline-block;font-family:var(--font-mono);font-size:0.7rem;color:var(--accent);background:var(--accent-dim);padding:0.25rem 0.7rem;border-radius:3px;margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.08em;width:fit-content;}
+.project-content h3{font-family:var(--font-display);font-size:1.5rem;font-weight:700;margin-bottom:0.75rem;}
+.project-content p{color:var(--text-secondary);margin-bottom:1.5rem;font-size:0.95rem;}
+.project-specs{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1.5rem;}
+.spec-item{font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);}
+.spec-item .val{color:var(--text-primary);font-weight:500;}
+.project-links{display:flex;gap:0.75rem;flex-wrap:wrap;}
+.project-links a{font-size:0.82rem;font-weight:600;color:var(--accent);text-decoration:none;padding:0.45rem 1rem;border:1px solid var(--accent);border-radius:5px;transition:all 0.2s;}
+.project-links a:hover{background:var(--accent);color:var(--bg-primary);}
+@media(max-width:900px){.project-card-inner,.project-card-inner.reverse{grid-template-columns:1fr;min-height:auto;}.project-media{height:300px;}}
+@media(max-width:600px){.project-specs{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="index.html" class="logo">Richard He</a>
+    <button class="hamburger" onclick="document.querySelector('nav ul').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
+    <ul>
+      <li><a href="index.html">About</a></li>
+      <li><a href="projects.html" class="active">Projects</a></li>
+      <li><a href="skills.html">Skills</a></li>
+      <li><a href="simulator.html">Ball Launcher Sim</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="https://www.linkedin.com/in/richard-he33/" target="_blank">LinkedIn ↗</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <div class="section-label">Featured Work</div>
+    <h1 class="section-title">Projects</h1>
+  </div>
+</div>
+<section id="projects">
+  <div class="container">
+    <div class="project-card fade-in">
+      <div class="project-card-inner reverse">
+        <div class="project-media">
+          <img src="images/pitcher-render.png" alt="Tennis ball pitching machine CAD render" class="cad-render pitcher-render">
+        </div>
+        <div class="project-content">
+          <h3>Tennis Ball Pitching Machine</h3>
+          <p>A three wheel tennis ball launcher designed to create realistic shot variation through independent wheel speed control and adjustable pitch and yaw aiming.</p>
+          <div class="project-links"><a href="tennis-ball-machine.html">View Project →</a><a href="simulator.html">Try Simulator →</a></div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="project-card fade-in">
+      <div class="project-card-inner">
+        <div class="project-media">
+          <img src="images/datsun-exterior.JPG" alt="Datsun 240Z restoration thumbnail">
+        </div>
+        <div class="project-content">
+          <span class="project-tag">Passion Project · Jun 2020 to Mar 2025</span>
+          <h3>Datsun 240Z Restoration</h3>
+          <p>A five year mechanical restoration of a 1973 Datsun 240Z, taken from non running to road registered while I studied mechanical engineering full time.</p>
+          <div class="project-links"><a href="datsun-240z.html">View Project →</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="project-card-inner">
+        <div class="project-media">
+          <img src="images/compactor-render.png" alt="Automatic rubbish compactor bin CAD render" class="cad-render compactor-render">
+        </div>
+        <div class="project-content">
+          <span class="project-tag">Personal Project</span>
+          <h3>Automatic Rubbish Compactor Bin</h3>
+          <p>A compact household rubbish bin with an integrated automatic compaction system, designed to hold more waste with fewer bag changes and no manual pressing. Built as a small product design project focused on mechanism layout, packaging, fabrication, and iteration.</p>
+          <div class="project-links"><a href="compactor.html">View Project →</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer><div class="container">© 2025 Richard He · Built with care, hosted on GitHub Pages</div></footer>
+
+<script>
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.12});
+document.querySelectorAll('.fade-in').forEach(el=>observer.observe(el));
+document.querySelectorAll('nav ul a').forEach(a=>{a.addEventListener('click',()=>document.querySelector('nav ul').classList.remove('open'));});
+</script>
+
+</body>
+</html>

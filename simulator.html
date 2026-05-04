@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ball Launcher Simulator — Richard He</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+<style>
+:root {
+  --bg-primary: #08080d;
+  --bg-card: #111118;
+  --border: #1e1e2a;
+  --accent: #3dd8c5;
+  --accent-dim: rgba(61,216,197,0.3);
+  --text-primary: #e4e4ed;
+  --text-secondary: #8888a0;
+  --text-muted: #55556a;
+  --white: #ffffff;
+  --red: #f87171;
+  --green: #4ade80;
+  --yellow: #fbbf24;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
+nav { padding: 1rem 2rem; background: rgba(8,8,13,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+nav .logo { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; color: var(--white); text-decoration: none; }
+nav .logo span { color: var(--accent); }
+nav .back { font-size: 0.85rem; color: var(--text-secondary); text-decoration: none; }
+nav .back:hover { color: var(--accent); }
+nav ul { list-style:none; display:flex; gap:2rem; align-items:center; }
+nav a { color:var(--text-secondary); text-decoration:none; font-size:0.88rem; font-weight:500; transition:color 0.2s; }
+nav a:hover, nav a.active { color:var(--accent); }
+@media (max-width: 900px) { nav ul { gap:1rem; flex-wrap:wrap; justify-content:flex-end; } }
+.sim-layout { display: grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 56px); }
+.sidebar { background: var(--bg-card); border-right: 1px solid var(--border); padding: 1.5rem; overflow-y: auto; max-height: calc(100vh - 56px); position: sticky; top: 56px; }
+.sidebar h2 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin-bottom: 0.25rem; }
+.sidebar .sub { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+.control-group { margin-bottom: 1.5rem; }
+.control-group h3 { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+.control-row { display: flex; align-items: center; margin-bottom: 0.6rem; }
+.control-row label { font-size: 0.82rem; color: var(--text-secondary); min-width: 80px; }
+.control-row input[type="range"] { flex: 1; margin: 0 0.6rem; accent-color: var(--accent); }
+.control-row .val { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-primary); min-width: 62px; text-align: right; }
+.launch-btn { width: 100%; padding: 0.8rem; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 6px; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-bottom: 1rem; }
+.launch-btn:hover { box-shadow: 0 0 20px rgba(61,216,197,0.25); }
+.results { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-top: 0.5rem; }
+.results h3 { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.6rem; }
+.result-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 0.2rem 0; border-bottom: 1px solid rgba(30,30,42,0.5); }
+.result-row .rlabel { color: var(--text-muted); }
+.result-row .rval { font-family: var(--font-mono); font-size: 0.78rem; }
+.badge { display: inline-block; font-family: var(--font-mono); font-size: 0.68rem; padding: 0.15rem 0.5rem; border-radius: 3px; }
+.badge.ok { background: rgba(74,222,128,0.15); color: var(--green); }
+.badge.warn { background: rgba(251,191,36,0.15); color: var(--yellow); }
+.badge.fail { background: rgba(248,113,113,0.15); color: var(--red); }
+.main-area { padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 0.85rem; }
+.plot-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; position: relative; }
+.plot-box .plot-title { position: absolute; top: 10px; left: 14px; font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; color: var(--text-primary); z-index: 2; pointer-events: none; }
+.plot-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+canvas { display: block; width: 100%; }
+
+.preset-table-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.preset-table-box .preset-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  padding: 1rem 1.2rem 0.4rem;
+}
+.preset-table-box .preset-sub {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  padding: 0 1.2rem 0.9rem;
+}
+.preset-table-wrap {
+  overflow-x: auto;
+  padding: 0 1.2rem 1.2rem;
+}
+.preset-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+.preset-table th,
+.preset-table td {
+  border-bottom: 1px solid rgba(30,30,42,0.9);
+  padding: 0.55rem 0.65rem;
+  text-align: left;
+  white-space: nowrap;
+}
+.preset-table th {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.65rem;
+  background: rgba(8,8,13,0.45);
+}
+.preset-table td { color: var(--text-secondary); }
+.preset-table td:first-child { color: var(--text-primary); font-weight: 500; }
+.preset-table tr:hover td { background: rgba(61,216,197,0.04); }
+
+.info-bar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.5rem; font-size: 0.82rem; color: var(--text-secondary); }
+.info-bar strong { color: var(--text-primary); }
+@media (max-width: 900px) { .sim-layout { grid-template-columns: 1fr; } .sidebar { position: static; max-height: none; border-right: none; border-bottom: 1px solid var(--border); } .plot-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Richard He</a>
+  <ul>
+      <li><a href="index.html">About</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="skills.html">Skills</a></li>
+      <li><a href="simulator.html" class="active">Ball Launcher Sim</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="https://www.linkedin.com/in/richard-he33/" target="_blank">LinkedIn ↗</a></li>
+    </ul>
+</nav>
+<div class="sim-layout">
+  <div class="sidebar">
+    <h2>Ball Launcher Simulator</h2>
+    <p class="sub">Three-wheel pitching machine physics model</p>
+    <div class="control-group">
+      <h3>Wheel RPM</h3>
+      <div class="control-row"><label>Top-Left</label><input type="range" id="tlRpm" min="0" max="3500" step="50" value="2700"><span class="val" id="tlRpmVal">2700</span></div>
+      <div class="control-row"><label>Top-Right</label><input type="range" id="trRpm" min="0" max="3500" step="50" value="2700"><span class="val" id="trRpmVal">2700</span></div>
+      <div class="control-row"><label>Bottom</label><input type="range" id="bRpm" min="0" max="3500" step="50" value="1200"><span class="val" id="bRpmVal">1200</span></div>
+    </div>
+    <div class="control-group">
+      <h3>Aim Angles</h3>
+      <div class="control-row"><label>Pitch</label><input type="range" id="pitch" min="-10" max="45" step="0.5" value="8"><span class="val" id="pitchVal">8.0°</span></div>
+      <div class="control-row"><label>Yaw</label><input type="range" id="yaw" min="-45" max="45" step="0.5" value="0"><span class="val" id="yawVal">0.0°</span></div>
+    </div>
+    <button class="launch-btn" onclick="runSimulation()">▶ Launch</button>
+    <div class="results"><h3>Results</h3><div id="resultsContent"><p style="color:var(--text-muted);font-size:0.8rem;">Adjust parameters and press Launch.</p></div></div>
+  </div>
+  <div class="main-area">
+    <div class="plot-box"><span class="plot-title">3D Trajectory (drag to rotate)</span><canvas id="canvas3d" height="320"></canvas></div>
+    <div class="plot-row">
+      <div class="plot-box"><span class="plot-title">Side View</span><canvas id="canvasSide" height="230"></canvas></div>
+      <div class="plot-box"><span class="plot-title">Top View (Court)</span><canvas id="canvasTop" height="230"></canvas></div>
+    </div>
+
+    <div class="preset-table-box">
+      <div class="preset-title">Filtered Preset Table</div>
+      <div class="preset-sub">Representative wheel speed presets from the simulation sweep.</div>
+      <div class="preset-table-wrap">
+        <table class="preset-table">
+          <thead>
+            <tr>
+              <th>Preset</th><th>TL RPM</th><th>TR RPM</th><th>B RPM</th><th>Speed</th><th>Depth</th><th>Left/Right</th><th>Net Clearance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Flat Medium</td><td>2100</td><td>2100</td><td>2100</td><td>92.5 km/h</td><td>18.80 m</td><td>0.00 m</td><td>0.22 m</td></tr>
+            <tr><td>Flat Deep</td><td>2400</td><td>2400</td><td>2400</td><td>105.7 km/h</td><td>22.62 m</td><td>0.00 m</td><td>0.53 m</td></tr>
+            <tr><td>Topspin Medium</td><td>1800</td><td>2100</td><td>2700</td><td>96.9 km/h</td><td>18.69 m</td><td>-0.07 m</td><td>0.20 m</td></tr>
+            <tr><td>Topspin Deep</td><td>2100</td><td>2100</td><td>3000</td><td>105.7 km/h</td><td>20.71 m</td><td>0.00 m</td><td>0.38 m</td></tr>
+            <tr><td>Backspin Medium</td><td>2100</td><td>2400</td><td>1200</td><td>83.7 km/h</td><td>17.99 m</td><td>-0.07 m</td><td>0.15 m</td></tr>
+            <tr><td>Backspin Deep</td><td>2700</td><td>2700</td><td>1200</td><td>96.9 km/h</td><td>23.43 m</td><td>0.00 m</td><td>0.61 m</td></tr>
+            <tr><td>Left Sidespin Medium</td><td>3000</td><td>1200</td><td>2100</td><td>92.5 km/h</td><td>18.79 m</td><td>0.45 m</td><td>0.22 m</td></tr>
+            <tr><td>Left Sidespin Deep</td><td>3000</td><td>1500</td><td>2400</td><td>101.3 km/h</td><td>21.02 m</td><td>0.44 m</td><td>0.41 m</td></tr>
+            <tr><td>Right Sidespin Medium</td><td>1200</td><td>3000</td><td>2100</td><td>92.5 km/h</td><td>18.79 m</td><td>-0.45 m</td><td>0.22 m</td></tr>
+            <tr><td>Right Sidespin Deep</td><td>1500</td><td>3000</td><td>2400</td><td>101.3 km/h</td><td>21.02 m</td><td>-0.44 m</td><td>0.41 m</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="info-bar"><strong>About this model:</strong> This simulator converts the Python physics engine built during the tennis ball pitching machine project. It models three-wheel spin decomposition, motor torque curves, traction limits, aerodynamic drag, Magnus effect, and multi-bounce behavior. Coordinate system: x = forward, y = left-right, z = height. Launch point is at court baseline height (0.45 m).</div>
+  </div>
+</div>
+<script>
+const C={launchXYZ:[0,0,0.45],launcherToNet:11.885,launcherToFarBaseline:23.77,singlesHalf:4.115,doublesHalf:5.485,netHeight:0.914,ballMass:0.057,ballRadius:0.0345,ballInertiaFactor:2/3,wheelDiameter:0.254,wheelRadius:0.127,wheelInertia:0.0135,compression:0.0055,muPU:0.70,stiffnessK:250000,stiffnessN:1.5,contactTime:0.008,energyLossFactor:1.10,motorNoLoadRPM:3500,motorWorkingMaxRPM:3000,motorCurveTorqueMax:1.20,motorCurveRPMatTMax:2900,motorRatedTorque:1.25,kSpeed:0.92,kVerticalSpin:0.80,kSideSpin:0.80,verticalSpinSign:1.0,G:9.81,rhoAir:1.225,CD:0.55,CM:0.00020,bounceRestitution:0.74,groundTangentialDamping:0.10,bounceSpinToForward:0.18,bounceSpinToSide:0.12,spinRetention:0.78,dt:0.002,tMax:4.0,maxBounces:2};
+
+function rpmToSurface(r){return Math.PI*C.wheelDiameter*r/60}
+function rpmToRadS(r){return r*2*Math.PI/60}
+function motorTorque(r){if(r>=C.motorNoLoadRPM)return 0;const s=C.motorCurveTorqueMax/(C.motorNoLoadRPM-C.motorCurveRPMatTMax);return Math.max(0,Math.min(C.motorRatedTorque,s*(C.motorNoLoadRPM-r)))}
+function classifyShot(ov,os){const av=Math.abs(ov),ah=Math.abs(os),m=Math.hypot(ov,os);if(m<40)return'Flat';if(av>=1.5*ah)return ov>=0?'Topspin':'Backspin';if(ah>=1.5*av)return os>=0?'Left sidespin':'Right sidespin';return'Mixed spin'}
+
+function computeLaunch(tl,tr,b){
+  const uTL=rpmToSurface(tl),uTR=rpmToSurface(tr),uB=rpmToSurface(b);
+  const sm=(uTL+uTR+uB)/3,vm=uB-0.5*(uTL+uTR),sdm=0.5*(uTL-uTR);
+  const iSpd=C.kSpeed*sm,iOV=C.verticalSpinSign*C.kVerticalSpin*vm/C.ballRadius,iOS=C.kSideSpin*sdm/C.ballRadius,iSM=Math.hypot(iOV,iOS);
+  const nf=C.stiffnessK*Math.pow(C.compression,C.stiffnessN),tl2=C.muPU*nf;
+  const Ib=C.ballInertiaFactor*C.ballMass*C.ballRadius**2;
+  const Fl=C.ballMass*iSpd/C.contactTime,Fs=Ib*iSM/(C.contactTime*C.ballRadius),rfpw=(Fl+Fs)/3;
+  const tf=tl2>1e-12?Math.min(1,tl2/rfpw):1;
+  const Eb=(0.5*C.ballMass*iSpd**2+0.5*Ib*iSM**2)*C.energyLossFactor;
+  const su=[Math.abs(uTL),Math.abs(uTR),Math.abs(uB)],ss=su.reduce((a,b)=>a+b,0);
+  const sh=ss>1e-12?su.map(s=>s/ss):[1/3,1/3,1/3];
+  const rpms=[tl,tr,b],taus=rpms.map(motorTorque),oms=rpms.map(rpmToRadS);
+  let md=0,mef=1;
+  for(let i=0;i<3;i++){const Er=sh[i]*Eb;const Ew=0.5*C.wheelInertia*oms[i]**2;const Em=taus[i]*oms[i]*C.contactTime;const Ea=Ew+Em;if(Er>1e-12){mef=Math.min(mef,Ea/Er);const dE=Math.min(Er,Ea);const oa=dE>=Ew?0:Math.sqrt(Math.max(0,oms[i]**2-2*dE/C.wheelInertia));if(oms[i]>1e-12)md=Math.max(md,1-oa/oms[i])}}
+  mef=Math.min(1,mef);const del=Math.max(0,Math.min(1,tf,mef));
+  return{speed:iSpd*del,omegaV:iOV*del,omegaS:iOS*del,spinMag:Math.hypot(iOV*del,iOS*del),shotFamily:classifyShot(iOV*del,iOS*del),delivery:del,tractionLimit:tl2,reqForce:rfpw,maxDroop:md*100,rpmWarn:rpms.some(r=>r>C.motorWorkingMaxRPM),taus}
+}
+
+function simulate(L,pd,yd){
+  const pr=pd*Math.PI/180,yr=yd*Math.PI/180;
+  let vx=L.speed*Math.cos(pr)*Math.cos(yr),vy=L.speed*Math.cos(pr)*Math.sin(yr),vz=L.speed*Math.sin(pr);
+  let rx=0,ry=0,rz=0.45,ow=[0,L.omegaV,L.omegaS];
+  const path=[[rx,ry,rz]],bounces=[];let np2=null,bc=0,t=0;
+  const dk=0.5*C.rhoAir*C.CD*Math.PI*C.ballRadius**2/C.ballMass;
+  while(t<C.tMax){
+    const sp=Math.sqrt(vx*vx+vy*vy+vz*vz);
+    const ax=-dk*sp*vx+C.CM*(ow[1]*vz-ow[2]*vy),ay=-dk*sp*vy+C.CM*(ow[2]*vx-ow[0]*vz),az=-C.G-dk*sp*vz+C.CM*(ow[0]*vy-ow[1]*vx);
+    const nvx=vx+ax*C.dt,nvy=vy+ay*C.dt,nvz=vz+az*C.dt,nrx=rx+nvx*C.dt,nry=ry+nvy*C.dt,nrz=rz+nvz*C.dt;
+    if(np2===null&&rx<=C.launcherToNet&&nrx>=C.launcherToNet){const f=(C.launcherToNet-rx)/(nrx-rx);np2=[C.launcherToNet,ry+f*(nry-ry),rz+f*(nrz-rz)]}
+    if(rz>=0&&nrz<0){const f=-rz/(nrz-rz),ix=rx+f*(nrx-rx),iy=ry+f*(nry-ry);bounces.push([ix,iy,0]);path.push([ix,iy,0]);bc++;if(bc>C.maxBounces)break;
+      vz=-C.bounceRestitution*nvz;vx=nvx*(1-C.groundTangentialDamping)+C.bounceSpinToForward*ow[1]*C.ballRadius;vy=nvy*(1-C.groundTangentialDamping)+C.bounceSpinToSide*ow[2]*C.ballRadius;
+      rx=ix;ry=iy;rz=0;ow[1]*=C.spinRetention;ow[2]*=C.spinRetention;path.push([rx,ry,rz]);if(Math.sqrt(vx*vx+vy*vy+vz*vz)<0.5)break;t+=C.dt;continue}
+    path.push([nrx,nry,nrz]);rx=nrx;ry=nry;rz=nrz;vx=nvx;vy=nvy;vz=nvz;t+=C.dt;
+    if(rx>C.launcherToFarBaseline+5)break}
+  const ld=path[path.length-1];let cn=false,nc=null;
+  if(np2){nc=np2[2]-C.netHeight;cn=nc>0}
+  return{path,bounces,landing:ld,netPoint:np2,clearsNet:cn,netClearance:nc,
+    inSingles:ld[0]>=0&&ld[0]<=C.launcherToFarBaseline&&Math.abs(ld[1])<=C.singlesHalf,
+    inDoubles:ld[0]>=0&&ld[0]<=C.launcherToFarBaseline&&Math.abs(ld[1])<=C.doublesHalf}
+}
+
+// ======= CANVAS RENDERING =======
+const COL={bg:'#111118',grid:'#1a1a25',accent:'#3dd8c5',accentDim:'rgba(61,216,197,0.3)',bounce:'#fbbf24',landing:'#f87171',net:'rgba(255,255,255,0.35)',court:'rgba(255,255,255,0.12)',courtD:'rgba(255,255,255,0.08)',axLbl:'#6a6a82'};
+
+function setupCanvas(id){const c=document.getElementById(id),r=c.parentElement.getBoundingClientRect(),d=window.devicePixelRatio||1;c.width=r.width*d;c.height=parseInt(c.getAttribute('height'))*d;c.style.height=c.getAttribute('height')+'px';const x=c.getContext('2d');x.scale(d,d);return{ctx:x,w:r.width,h:parseInt(c.getAttribute('height'))}}
+
+function drawSideView(S){
+  const{ctx:x,w,h}=setupCanvas('canvasSide');
+  const p={l:55,r:20,t:40,b:40},pw=w-p.l-p.r,ph=h-p.t-p.b;
+  const mz=Math.max(3,...S.path.map(v=>v[2]))+0.5,xR=C.launcherToFarBaseline;
+  const tx=v=>p.l+(v/xR)*pw, ty=v=>p.t+ph-(v/mz)*ph;
+  x.fillStyle=COL.bg;x.fillRect(0,0,w,h);
+  x.strokeStyle=COL.grid;x.lineWidth=0.5;
+  for(let i=0;i<=xR;i+=5){x.beginPath();x.moveTo(tx(i),p.t);x.lineTo(tx(i),p.t+ph);x.stroke()}
+  for(let i=0;i<=mz;i+=1){x.beginPath();x.moveTo(p.l,ty(i));x.lineTo(p.l+pw,ty(i));x.stroke()}
+  x.strokeStyle=COL.net;x.lineWidth=1.5;x.setLineDash([6,4]);
+  x.beginPath();x.moveTo(tx(C.launcherToNet),p.t);x.lineTo(tx(C.launcherToNet),p.t+ph);x.stroke();x.setLineDash([]);
+  x.fillStyle=COL.net;x.beginPath();x.arc(tx(C.launcherToNet),ty(C.netHeight),3,0,Math.PI*2);x.fill();
+  x.font='10px JetBrains Mono';x.fillStyle=COL.axLbl;x.fillText('net',tx(C.launcherToNet)+6,ty(C.netHeight)-4);
+  x.strokeStyle=COL.accent;x.lineWidth=2.5;x.shadowColor=COL.accentDim;x.shadowBlur=8;
+  x.beginPath();S.path.forEach((v,i)=>{i===0?x.moveTo(tx(v[0]),ty(v[2])):x.lineTo(tx(v[0]),ty(v[2]))});x.stroke();x.shadowBlur=0;
+  x.fillStyle=COL.accent;x.beginPath();x.arc(tx(0),ty(0.45),5,0,Math.PI*2);x.fill();
+  S.bounces.forEach(b=>{x.fillStyle=COL.bounce;x.beginPath();x.arc(tx(b[0]),ty(b[2]),5,0,Math.PI*2);x.fill()});
+  x.fillStyle=COL.landing;x.beginPath();x.arc(tx(S.landing[0]),ty(S.landing[2]),5,0,Math.PI*2);x.fill();
+  x.fillStyle=COL.axLbl;x.font='11px JetBrains Mono';x.textAlign='center';
+  x.fillText('Forward x [m]',p.l+pw/2,h-8);
+  x.save();x.translate(14,p.t+ph/2);x.rotate(-Math.PI/2);x.fillText('Height z [m]',0,0);x.restore();
+  x.font='9px JetBrains Mono';x.textAlign='center';
+  for(let i=0;i<=xR;i+=5)x.fillText(i,tx(i),h-p.b+15);
+  x.textAlign='right';for(let i=0;i<=mz;i+=1)x.fillText(i.toFixed(0),p.l-8,ty(i)+3);
+}
+
+function drawTopView(S){
+  const{ctx:x,w,h}=setupCanvas('canvasTop');
+  const p={l:55,r:20,t:40,b:40},pw=w-p.l-p.r,ph=h-p.t-p.b;
+  const xR=C.launcherToFarBaseline,yR=7;
+  const tx=v=>p.l+(v/xR)*pw, ty=v=>p.t+ph/2-(v/yR)*(ph/2);
+  x.fillStyle=COL.bg;x.fillRect(0,0,w,h);
+  x.strokeStyle=COL.grid;x.lineWidth=0.5;
+  for(let i=0;i<=xR;i+=5){x.beginPath();x.moveTo(tx(i),p.t);x.lineTo(tx(i),p.t+ph);x.stroke()}
+  for(let i=-6;i<=6;i+=2){x.beginPath();x.moveTo(p.l,ty(i));x.lineTo(p.l+pw,ty(i));x.stroke()}
+  // Court
+  x.strokeStyle=COL.court;x.lineWidth=1;
+  [[0,C.doublesHalf,xR,C.doublesHalf],[0,-C.doublesHalf,xR,-C.doublesHalf],[0,C.doublesHalf,0,-C.doublesHalf],[xR,C.doublesHalf,xR,-C.doublesHalf]].forEach(([a,b,c,d])=>{x.beginPath();x.moveTo(tx(a),ty(b));x.lineTo(tx(c),ty(d));x.stroke()});
+  x.strokeStyle=COL.courtD;x.setLineDash([4,4]);
+  [[0,C.singlesHalf,xR,C.singlesHalf],[0,-C.singlesHalf,xR,-C.singlesHalf]].forEach(([a,b,c,d])=>{x.beginPath();x.moveTo(tx(a),ty(b));x.lineTo(tx(c),ty(d));x.stroke()});
+  x.setLineDash([]);
+  x.strokeStyle=COL.net;x.lineWidth=2;x.beginPath();x.moveTo(tx(C.launcherToNet),ty(-C.doublesHalf));x.lineTo(tx(C.launcherToNet),ty(C.doublesHalf));x.stroke();
+  // Service boxes
+  x.strokeStyle=COL.courtD;x.lineWidth=0.5;x.setLineDash([3,3]);
+  const slx=C.launcherToNet+6.4,nsx=C.launcherToNet-6.4;
+  x.beginPath();x.moveTo(tx(slx),ty(-C.singlesHalf));x.lineTo(tx(slx),ty(C.singlesHalf));x.stroke();
+  x.beginPath();x.moveTo(tx(nsx),ty(-C.singlesHalf));x.lineTo(tx(nsx),ty(C.singlesHalf));x.stroke();
+  x.beginPath();x.moveTo(tx(nsx),ty(0));x.lineTo(tx(slx),ty(0));x.stroke();
+  x.setLineDash([]);
+  // Trajectory
+  x.strokeStyle=COL.accent;x.lineWidth=2.5;x.shadowColor=COL.accentDim;x.shadowBlur=8;
+  x.beginPath();S.path.forEach((v,i)=>{i===0?x.moveTo(tx(v[0]),ty(v[1])):x.lineTo(tx(v[0]),ty(v[1]))});x.stroke();x.shadowBlur=0;
+  x.fillStyle=COL.accent;x.beginPath();x.arc(tx(0),ty(0),5,0,Math.PI*2);x.fill();
+  S.bounces.forEach(b=>{x.fillStyle=COL.bounce;x.beginPath();x.arc(tx(b[0]),ty(b[1]),5,0,Math.PI*2);x.fill()});
+  x.fillStyle=COL.landing;x.beginPath();x.arc(tx(S.landing[0]),ty(S.landing[1]),5,0,Math.PI*2);x.fill();
+  x.fillStyle=COL.axLbl;x.font='11px JetBrains Mono';x.textAlign='center';
+  x.fillText('Forward x [m]',p.l+pw/2,h-8);
+  x.save();x.translate(14,p.t+ph/2);x.rotate(-Math.PI/2);x.fillText('Side y [m]',0,0);x.restore();
+  x.font='9px JetBrains Mono';x.textAlign='center';
+  for(let i=0;i<=xR;i+=5)x.fillText(i,tx(i),h-p.b+15);
+  x.textAlign='right';for(let i=-6;i<=6;i+=2)x.fillText(i,p.l-8,ty(i)+3);
+}
+
+// 3D isometric
+let camH=-0.6,camV=0.45,dragging=false,dsx=0,dsy=0,sH=0,sV=0,lastSim=null;
+function p3d(px,py,pz,w,h){
+  const ch=Math.cos(camH),sh=Math.sin(camH),cv=Math.cos(camV),sv=Math.sin(camV);
+  const cx=px-C.launcherToFarBaseline/2,cy=py;
+  const rx=cx*ch-cy*sh,ry=cx*sh+cy*ch;
+  const ry2=ry*cv-pz*sv,rz2=ry*sv+pz*cv;
+  return[w/2+rx*22,h/2-rz2*22+ry2*22*0.15]
+}
+function draw3D(S){
+  const{ctx:x,w,h}=setupCanvas('canvas3d');
+  x.fillStyle=COL.bg;x.fillRect(0,0,w,h);
+  const p=(a,b,c)=>p3d(a,b,c,w,h);
+  // Ground grid
+  x.strokeStyle=COL.grid;x.lineWidth=0.3;
+  for(let i=0;i<=C.launcherToFarBaseline;i+=2){const[a,b]=p(i,-7,0),[c,d]=p(i,7,0);x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke()}
+  for(let i=-6;i<=6;i+=2){const[a,b]=p(0,i,0),[c,d]=p(C.launcherToFarBaseline,i,0);x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke()}
+  // Court outline
+  x.strokeStyle=COL.court;x.lineWidth=1;
+  const cp=[[0,-C.doublesHalf],[C.launcherToFarBaseline,-C.doublesHalf],[C.launcherToFarBaseline,C.doublesHalf],[0,C.doublesHalf],[0,-C.doublesHalf]];
+  x.beginPath();cp.forEach(([a,b],i)=>{const[sx,sy]=p(a,b,0);i===0?x.moveTo(sx,sy):x.lineTo(sx,sy)});x.stroke();
+  // Singles
+  x.strokeStyle=COL.courtD;x.setLineDash([4,4]);x.lineWidth=0.7;
+  for(const yy of[-C.singlesHalf,C.singlesHalf]){const[a,b]=p(0,yy,0),[c,d]=p(C.launcherToFarBaseline,yy,0);x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke()}
+  x.setLineDash([]);
+  // Net
+  x.strokeStyle=COL.net;x.lineWidth=2;
+  const[na,nb]=p(C.launcherToNet,-C.doublesHalf,C.netHeight),[nc,nd]=p(C.launcherToNet,C.doublesHalf,C.netHeight);
+  x.beginPath();x.moveTo(na,nb);x.lineTo(nc,nd);x.stroke();
+  x.strokeStyle=COL.courtD;x.lineWidth=1;
+  for(const yy of[-C.doublesHalf,C.doublesHalf]){const[a,b]=p(C.launcherToNet,yy,0),[c,d]=p(C.launcherToNet,yy,C.netHeight);x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke()}
+  // Shadow
+  x.strokeStyle='rgba(61,216,197,0.08)';x.lineWidth=1;x.beginPath();S.path.forEach((v,i)=>{const[a,b]=p(v[0],v[1],0);i===0?x.moveTo(a,b):x.lineTo(a,b)});x.stroke();
+  // Trajectory
+  x.strokeStyle=COL.accent;x.lineWidth=2.5;x.shadowColor=COL.accentDim;x.shadowBlur=10;
+  x.beginPath();S.path.forEach((v,i)=>{const[a,b]=p(v[0],v[1],v[2]);i===0?x.moveTo(a,b):x.lineTo(a,b)});x.stroke();x.shadowBlur=0;
+  // Points
+  const[lx,ly]=p(0,0,0.45);x.fillStyle=COL.accent;x.beginPath();x.arc(lx,ly,5,0,Math.PI*2);x.fill();
+  S.bounces.forEach(b=>{const[a,c]=p(b[0],b[1],b[2]);x.fillStyle=COL.bounce;x.beginPath();x.arc(a,c,5,0,Math.PI*2);x.fill()});
+  const[dx,dy]=p(S.landing[0],S.landing[1],S.landing[2]);x.fillStyle=COL.landing;x.beginPath();x.arc(dx,dy,5,0,Math.PI*2);x.fill();
+  // Legend
+  x.font='10px JetBrains Mono';x.textAlign='left';
+  [[COL.accent,'● Launch'],[COL.bounce,'◆ Bounce'],[COL.landing,'● Landing']].forEach(([c,t],i)=>{x.fillStyle=c;x.fillText(t,14,h-50+i*14)});
+  // Axis indicator
+  const ox=w-70,oy=h-50;
+  [['x',1,0,0,'#f87171'],['y',0,1,0,'#4ade80'],['z',0,0,1,'#60a5fa']].forEach(([l,ax,ay,az,c])=>{
+    const[ex,ey]=p(C.launcherToFarBaseline/2+ax*2,ay*2,az*2),[oox,ooy]=p(C.launcherToFarBaseline/2,0,0);
+    const ddx=ex-oox,ddy=ey-ooy,ln=Math.sqrt(ddx*ddx+ddy*ddy);if(ln<1)return;
+    const nx=ddx/ln*30,ny=ddy/ln*30;
+    x.strokeStyle=c;x.lineWidth=1.5;x.beginPath();x.moveTo(ox,oy);x.lineTo(ox+nx,oy+ny);x.stroke();
+    x.fillStyle=c;x.font='10px JetBrains Mono';x.fillText(l,ox+nx+4,oy+ny+3)});
+}
+// Drag rotation
+const c3d=document.getElementById('canvas3d');
+c3d.addEventListener('mousedown',e=>{dragging=true;dsx=e.clientX;dsy=e.clientY;sH=camH;sV=camV});
+window.addEventListener('mousemove',e=>{if(!dragging)return;camH=sH+(e.clientX-dsx)*0.008;camV=Math.max(0.1,Math.min(1.4,sV-(e.clientY-dsy)*0.005));if(lastSim)draw3D(lastSim)});
+window.addEventListener('mouseup',()=>dragging=false);
+c3d.addEventListener('touchstart',e=>{const t=e.touches[0];dragging=true;dsx=t.clientX;dsy=t.clientY;sH=camH;sV=camV});
+window.addEventListener('touchmove',e=>{if(!dragging)return;const t=e.touches[0];camH=sH+(t.clientX-dsx)*0.008;camV=Math.max(0.1,Math.min(1.4,sV-(t.clientY-dsy)*0.005));if(lastSim)draw3D(lastSim)});
+window.addEventListener('touchend',()=>dragging=false);
+
+// UI wiring
+['tlRpm','trRpm','bRpm','pitch','yaw'].forEach(id=>{
+  const el=document.getElementById(id),v=document.getElementById(id+'Val');
+  el.addEventListener('input',()=>{v.textContent=id==='pitch'||id==='yaw'?parseFloat(el.value).toFixed(1)+'°':el.value})
+});
+
+function updateResults(L,S){
+  const nc=S.netClearance,ns=nc!==null?(nc*100).toFixed(1)+' cm':'—',nb=nc===null?'fail':nc>0?'ok':'fail';
+  const cb=S.inSingles?'ok':S.inDoubles?'warn':'fail',cs=S.inSingles?'Singles ✓':S.inDoubles?'Doubles only':'Out';
+  document.getElementById('resultsContent').innerHTML=`
+    <div class="result-row"><span class="rlabel">Shot type</span><span class="rval">${L.shotFamily}</span></div>
+    <div class="result-row"><span class="rlabel">Launch speed</span><span class="rval">${(L.speed*3.6).toFixed(1)} km/h</span></div>
+    <div class="result-row"><span class="rlabel">Vertical spin</span><span class="rval">${L.omegaV.toFixed(0)} rad/s</span></div>
+    <div class="result-row"><span class="rlabel">Side spin</span><span class="rval">${L.omegaS.toFixed(0)} rad/s</span></div>
+    <div class="result-row"><span class="rlabel">Delivery</span><span class="rval">${(L.delivery*100).toFixed(1)}%</span></div>
+    <div class="result-row"><span class="rlabel">Max wheel droop</span><span class="rval">${L.maxDroop.toFixed(1)}%</span></div>
+    <div class="result-row"><span class="rlabel">Net clearance</span><span class="rval"><span class="badge ${nb}">${ns}</span></span></div>
+    <div class="result-row"><span class="rlabel">Landing</span><span class="rval">x=${S.landing[0].toFixed(1)} y=${S.landing[1].toFixed(1)}</span></div>
+    <div class="result-row"><span class="rlabel">Court</span><span class="rval"><span class="badge ${cb}">${cs}</span></span></div>
+    <div class="result-row"><span class="rlabel">Bounces</span><span class="rval">${S.bounces.length}</span></div>
+    ${L.rpmWarn?'<div style="margin-top:0.5rem"><span class="badge warn">⚠ RPM above 3000 working limit</span></div>':''}`;
+}
+
+function runSimulation(){
+  const tl=+document.getElementById('tlRpm').value,tr=+document.getElementById('trRpm').value,b=+document.getElementById('bRpm').value;
+  const pd=+document.getElementById('pitch').value,yd=+document.getElementById('yaw').value;
+  const L=computeLaunch(tl,tr,b),S=simulate(L,pd,yd);
+  lastSim=S;draw3D(S);drawSideView(S);drawTopView(S);updateResults(L,S);
+}
+window.addEventListener('resize',()=>{if(lastSim){draw3D(lastSim);drawSideView(lastSim);drawTopView(lastSim)}});
+runSimulation();
+</script>
+</body>
+</html>

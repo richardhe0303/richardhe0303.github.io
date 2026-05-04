@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datsun 240Z Restoration — Richard He</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+<style>
+:root {
+  --bg-primary:#08080d;
+  --bg-card:#111118;
+  --border:#1e1e2a;
+  --accent:#3dd8c5;
+  --accent-dim:rgba(61,216,197,0.12);
+  --accent-glow:rgba(61,216,197,0.25);
+  --text-primary:#e4e4ed;
+  --text-secondary:#8888a0;
+  --text-muted:#55556a;
+  --white:#ffffff;
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.7;
+  overflow-x:hidden;
+}
+body::after{
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:0.025;
+  z-index:9999;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem;}
+nav{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:100;
+  padding:1rem 0;
+  background:rgba(8,8,13,0.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+nav .container{display:flex;align-items:center;justify-content:space-between;}
+nav .logo{font-family:var(--font-display);font-weight:800;font-size:1.15rem;color:var(--white);text-decoration:none;}
+nav ul{list-style:none;display:flex;gap:2rem;}
+nav a{color:var(--text-secondary);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color 0.2s;}
+nav a:hover,nav a.active{color:var(--accent);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text-primary);}
+.project-hero{padding:8rem 0 4rem;border-bottom:1px solid var(--border);}
+.back-link{display:inline-block;font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);text-decoration:none;margin-bottom:1.5rem;}
+.hero-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:3rem;align-items:center;}
+.hero-media{
+  min-height:430px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+}
+.hero-media img{width:100%;height:100%;object-fit:cover;display:block;}
+.hero-copy h1{
+  font-family:var(--font-display);
+  font-size:clamp(2.1rem,4vw,3.2rem);
+  line-height:1.08;
+  letter-spacing:-0.03em;
+  margin-bottom:1rem;
+}
+.hero-copy p{color:var(--text-secondary);margin-bottom:1.1rem;}
+.hero-actions{display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;}
+.hero-actions a{
+  font-size:0.84rem;
+  font-weight:600;
+  color:var(--accent);
+  text-decoration:none;
+  padding:0.55rem 1rem;
+  border:1px solid var(--accent);
+  border-radius:5px;
+  transition:all 0.2s;
+}
+.hero-actions a:hover{background:var(--accent);color:var(--bg-primary);}
+.content-section{padding:4rem 0;border-bottom:1px solid var(--border);}
+.section-grid{display:grid;grid-template-columns:230px 1fr;gap:3rem;align-items:start;}
+.section-kicker{font-family:var(--font-mono);font-size:0.72rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.6rem;}
+.section-grid h2{font-family:var(--font-display);font-size:1.55rem;line-height:1.2;letter-spacing:-0.02em;}
+.scope-work h2{font-family:var(--font-display);font-size:1.55rem;line-height:1.2;letter-spacing:-0.02em;margin-bottom:1.6rem;}
+.scope-work-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;}
+.scope-work-card{margin-bottom:0;min-height:170px;}
+.scope-work-card-wide{grid-column:1 / -1;min-height:0;}
+.content-block{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:2rem;margin-bottom:1.4rem;}
+.content-block h3{font-family:var(--font-display);font-size:1.05rem;color:var(--accent);margin-bottom:0.75rem;}
+.content-block p,.content-block li{color:var(--text-secondary);font-size:0.95rem;}
+.content-block p+p{margin-top:0.8rem;}
+.content-block ul{list-style:none;padding:0;}
+.content-block li{margin-bottom:0.45rem;}
+.content-block li::before{content:'→ ';color:var(--accent);font-weight:600;}
+.scope-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;}
+.scope-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.4rem;}
+.scope-card h3{font-family:var(--font-display);font-size:1rem;color:var(--accent);margin-bottom:0.5rem;}
+.scope-card p{color:var(--text-secondary);font-size:0.9rem;}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.compare-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.compare-card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#0d0d14;}
+.compare-caption{padding:0.85rem 1rem;border-top:1px solid var(--border);}
+.compare-caption .label{font-family:var(--font-mono);font-size:0.68rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.2rem;}
+.compare-caption p{font-size:0.86rem;color:var(--text-secondary);line-height:1.55;}
+.compare-wide{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+.gallery-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color 0.25s,transform 0.25s;}
+.gallery-card:hover{border-color:rgba(61,216,197,0.4);transform:translateY(-2px);}
+.gallery-card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#0d0d14;}
+.gallery-card .caption{padding:0.85rem 1rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;}
+.note{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-top:0.8rem;}
+.hero-media img,.compare-card img,.gallery-card img{cursor:zoom-in;}
+.lightbox{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:2rem;
+  background:rgba(0,0,0,0.86);
+  backdrop-filter:blur(8px);
+}
+.lightbox.open{display:flex;}
+.lightbox-inner{
+  position:relative;
+  width:min(1100px,96vw);
+  max-height:90vh;
+  display:flex;
+  flex-direction:column;
+  gap:0.8rem;
+}
+.lightbox img{
+  width:100%;
+  max-height:82vh;
+  object-fit:contain;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#0d0d14;
+  box-shadow:0 20px 80px rgba(0,0,0,0.6);
+}
+.lightbox-caption{
+  font-family:var(--font-mono);
+  font-size:0.74rem;
+  color:var(--text-secondary);
+  text-align:center;
+}
+.lightbox-close{
+  position:absolute;
+  top:-0.75rem;
+  right:-0.75rem;
+  width:38px;
+  height:38px;
+  border:1px solid var(--border);
+  border-radius:50%;
+  background:var(--bg-card);
+  color:var(--text-primary);
+  font-size:1.25rem;
+  line-height:1;
+  cursor:pointer;
+}
+.lightbox-close:hover{color:var(--accent);border-color:rgba(61,216,197,0.45);}
+.lightbox-nav{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:46px;
+  height:46px;
+  border:1px solid var(--border);
+  border-radius:50%;
+  background:rgba(17,17,24,0.86);
+  color:var(--text-primary);
+  font-size:1.8rem;
+  line-height:1;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:border-color 0.2s,color 0.2s,background 0.2s;
+}
+.lightbox-nav:hover{
+  color:var(--accent);
+  border-color:rgba(61,216,197,0.45);
+  background:rgba(17,17,24,0.96);
+}
+.lightbox-prev{left:-3.2rem;}
+.lightbox-next{right:-3.2rem;}
+@media(max-width:760px){
+  .lightbox{padding:1rem;}
+  .lightbox-prev{left:0.5rem;}
+  .lightbox-next{right:0.5rem;}
+  .lightbox-nav{width:40px;height:40px;font-size:1.5rem;}
+}
+
+footer{padding:2rem 0;border-top:1px solid var(--border);text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);}
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+@media(max-width:900px){
+  nav ul{display:none;}
+  nav ul.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(8,8,13,0.97);padding:1.5rem 2rem;gap:1rem;border-bottom:1px solid var(--border);}
+  .hamburger{display:flex;}
+  .hero-grid,.section-grid{grid-template-columns:1fr;}
+  .hero-media{min-height:300px;}
+  .scope-grid,.compare-wide,.scope-work-grid{grid-template-columns:1fr;}
+  .scope-work-card-wide{grid-column:auto;}
+}
+@media(max-width:640px){
+  .container{padding:0 1.3rem;}
+  .compare-grid{grid-template-columns:1fr;}
+  .project-hero{padding-top:7rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="index.html" class="logo">Richard He</a>
+    <button class="hamburger" onclick="document.querySelector('nav ul').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
+    <ul>
+      <li><a href="index.html">About</a></li>
+      <li><a href="projects.html" class="active">Projects</a></li>
+      <li><a href="skills.html">Skills</a></li>
+      <li><a href="simulator.html">Ball Launcher Sim</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="https://www.linkedin.com/in/richard-he33/" target="_blank">LinkedIn ↗</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="project-hero">
+  <div class="container">
+    <a href="projects.html" class="back-link">← Back to Projects</a>
+    <div class="hero-grid fade-in">
+      <div class="hero-media">
+        <img src="images/datsun/datsun-thumbnail.jpg" alt="Datsun 240Z restoration finished exterior thumbnail">
+      </div>
+      <div class="hero-copy">
+        <h1>Datsun 240Z Restoration</h1>
+        <p>A five year mechanical restoration of a 1973 Datsun 240Z, taken from non running to road registered while I studied mechanical engineering full time.</p>
+        <p>The project covered diagnostics, part sourcing, drivetrain fitment, carburettor tuning, fuel system work, brake and suspension refresh, steering repair, rust repair, interior strip out, and repaint preparation.</p>
+        <div class="hero-actions">
+          <a href="#scope">Scope of Work</a>
+          <a href="#before-after">Before and After</a>
+          <a href="#gallery">Gallery</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="scope">
+  <div class="container">
+    <div class="scope-work fade-in">
+      <div class="section-kicker">Scope</div>
+      <h2>Scope of work</h2>
+      <div class="scope-work-grid">
+        <div class="content-block scope-work-card">
+          <h3>Drivetrain and Engine</h3>
+          <ul>
+            <li>4 speed to 5 speed transmission swap with fitment checks</li>
+            <li>Carburettor rebuild and tuning</li>
+            <li>Fuel tank restoration and fuel line replacement</li>
+          </ul>
+        </div>
+        <div class="content-block scope-work-card">
+          <h3>Chassis and Suspension</h3>
+          <ul>
+            <li>Suspension refresh including most bushings and shocks</li>
+            <li>Brake rebuild with pad replacement</li>
+            <li>Steering rack restoration</li>
+          </ul>
+        </div>
+        <div class="content-block scope-work-card scope-work-card-wide">
+          <h3>Body and Interior</h3>
+          <ul>
+            <li>Interior strip out and floorpan replacement</li>
+            <li>Rust repair and prevention</li>
+            <li>Full interior repaint</li>
+            <li>Exterior paint and bodywork planned, but vehicle was sold before completion due to relocation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="before-after">
+  <div class="container">
+    <div class="section-grid fade-in">
+      <div>
+        <div class="section-kicker">Proof</div>
+        <h2>Before and after work</h2>
+      </div>
+      <div>
+        <div class="content-block">
+          <h3>Engine bay</h3>
+          <p>The engine bay work supported inspection, serviceability, and reliability. It included cleanup, part replacement, fuel system work, carburettor work, and preparation for continued mechanical troubleshooting.</p>
+        </div>
+        <div class="compare-wide">
+          <div class="compare-card">
+            <img src="images/datsun/datsun-engine-before.jpg" alt="Datsun 240Z engine bay before restoration work">
+            <div class="compare-caption"><div class="label">Before</div><p>Engine bay condition before cleanup and mechanical work.</p></div>
+          </div>
+          <div class="compare-card">
+            <img src="images/datsun/datsun-engine-after-1.jpg" alt="Datsun 240Z engine bay after restoration work front view">
+            <div class="compare-caption"><div class="label">After 01</div><p>Engine bay after restoration work and assembly improvements.</p></div>
+          </div>
+          <div class="compare-card">
+            <img src="images/datsun/datsun-engine-after-2.jpg" alt="Datsun 240Z engine bay after restoration work side view">
+            <div class="compare-caption"><div class="label">After 02</div><p>Second view showing the completed engine bay condition.</p></div>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <h3>Interior</h3>
+          <p>The interior was stripped, repaired, and repainted. This work exposed the condition of the body shell and helped guide rust repair, floorpan work, sealing, and reassembly.</p>
+        </div>
+        <div class="compare-wide">
+          <div class="compare-card">
+            <img src="images/datsun/datsun-interior-before.jpg" alt="Datsun 240Z interior before restoration work">
+            <div class="compare-caption"><div class="label">Before</div><p>Interior condition before strip out and repaint work.</p></div>
+          </div>
+          <div class="compare-card">
+            <img src="images/datsun/datsun-interior-after-1.jpg" alt="Datsun 240Z interior after restoration work rear view">
+            <div class="compare-caption"><div class="label">After 01</div><p>Interior after cleaning, preparation, and repaint work.</p></div>
+          </div>
+          <div class="compare-card">
+            <img src="images/datsun/datsun-interior-after-2.jpg" alt="Datsun 240Z interior after restoration work dashboard view">
+            <div class="compare-caption"><div class="label">After 02</div><p>Second after view showing the restored cabin condition.</p></div>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <h3>Rear hatch and cargo area</h3>
+          <p>The hatch area needed cleanup and rust prevention work. This section shows the difference between the original condition and the finished rear interior area.</p>
+        </div>
+        <div class="compare-wide">
+          <div class="compare-card">
+            <img src="images/datsun/datsun-hatch-before-1.jpg" alt="Datsun 240Z hatch area before restoration work first view">
+            <div class="compare-caption"><div class="label">Before 01</div><p>Rear hatch area before cleaning and repaint work.</p></div>
+          </div>
+          <div class="compare-card">
+            <img src="images/datsun/datsun-hatch-before-2.jpg" alt="Datsun 240Z hatch area before restoration work second view">
+            <div class="compare-caption"><div class="label">Before 02</div><p>Second view of the hatch area before restoration.</p></div>
+          </div>
+          <div class="compare-card">
+            <img src="images/datsun/datsun-hatch-after.jpg" alt="Datsun 240Z hatch area after restoration work">
+            <div class="compare-caption"><div class="label">After</div><p>Hatch area after cleanup, treatment, and repaint work.</p></div>
+          </div>
+        </div>
+        <p class="note">Click any image to enlarge it inside the page.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="gallery">
+  <div class="container">
+    <div class="section-grid fade-in">
+      <div>
+        <div class="section-kicker">Gallery</div>
+        <h2>Build photos</h2>
+      </div>
+      <div>
+        <div class="gallery">
+          <div class="gallery-card"><img src="images/datsun/datsun-gallery-01.jpg" alt="Datsun 240Z restoration gallery photo 01"><div class="caption">Gallery 01</div></div>
+          <div class="gallery-card"><img src="images/datsun/datsun-gallery-02.jpg" alt="Datsun 240Z restoration gallery photo 02"><div class="caption">Gallery 02</div></div>
+          <div class="gallery-card"><img src="images/datsun/datsun-gallery-03.jpg" alt="Datsun 240Z restoration gallery photo 03"><div class="caption">Gallery 03</div></div>
+          <div class="gallery-card"><img src="images/datsun/datsun-gallery-04.jpg" alt="Datsun 240Z restoration gallery photo 04"><div class="caption">Gallery 04</div></div>
+          <div class="gallery-card"><img src="images/datsun/datsun-gallery-05.jpg" alt="Datsun 240Z restoration gallery photo 05"><div class="caption">Gallery 05</div></div>
+          <div class="gallery-card"><img src="images/datsun/datsun-gallery-06.jpg" alt="Datsun 240Z restoration gallery photo 06"><div class="caption">Gallery 06</div></div>
+        </div>
+        <p class="note">Add more gallery images later by continuing the same filename pattern: datsun-gallery-07.jpg, datsun-gallery-08.jpg, and so on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="lightbox" id="imageLightbox" aria-hidden="true">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" type="button" aria-label="Close enlarged image">×</button>
+    <button class="lightbox-nav lightbox-prev" type="button" aria-label="Previous image">‹</button>
+    <img id="lightboxImage" src="" alt="">
+    <button class="lightbox-nav lightbox-next" type="button" aria-label="Next image">›</button>
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+</div>
+
+<footer><div class="container">© 2025 Richard He · Built with care, hosted on GitHub Pages</div></footer>
+
+<script>
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.12});
+document.querySelectorAll('.fade-in').forEach(el=>observer.observe(el));
+document.querySelectorAll('nav ul a').forEach(a=>{a.addEventListener('click',()=>document.querySelector('nav ul').classList.remove('open'));});
+
+const lightbox=document.getElementById('imageLightbox');
+const lightboxImage=document.getElementById('lightboxImage');
+const lightboxCaption=document.getElementById('lightboxCaption');
+const lightboxClose=document.querySelector('.lightbox-close');
+const lightboxPrev=document.querySelector('.lightbox-prev');
+const lightboxNext=document.querySelector('.lightbox-next');
+const pageImages=Array.from(document.querySelectorAll('.hero-media img,.compare-card img,.gallery-card img'));
+let currentLightboxIndex=0;
+
+function showLightboxImage(index){
+  currentLightboxIndex=(index+pageImages.length)%pageImages.length;
+  const img=pageImages[currentLightboxIndex];
+  lightboxImage.src=img.src;
+  lightboxImage.alt=img.alt||'Project image';
+  lightboxCaption.textContent=`${img.alt||'Project image'} · ${currentLightboxIndex+1} of ${pageImages.length}`;
+}
+
+function openLightbox(img){
+  const foundIndex=pageImages.indexOf(img);
+  showLightboxImage(foundIndex>=0?foundIndex:0);
+  lightbox.classList.add('open');
+  lightbox.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+}
+
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  lightbox.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+  lightboxImage.src='';
+}
+
+function moveLightbox(step){
+  showLightboxImage(currentLightboxIndex+step);
+}
+
+pageImages.forEach(img=>{
+  img.addEventListener('click',()=>openLightbox(img));
+  img.setAttribute('tabindex','0');
+  img.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){
+      e.preventDefault();
+      openLightbox(img);
+    }
+  });
+});
+
+lightboxClose.addEventListener('click',closeLightbox);
+lightboxPrev.addEventListener('click',()=>moveLightbox(-1));
+lightboxNext.addEventListener('click',()=>moveLightbox(1));
+lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeLightbox();});
+document.addEventListener('keydown',e=>{
+  if(!lightbox.classList.contains('open'))return;
+  if(e.key==='Escape')closeLightbox();
+  if(e.key==='ArrowLeft')moveLightbox(-1);
+  if(e.key==='ArrowRight')moveLightbox(1);
+});
+</script>
+</body>
+</html>

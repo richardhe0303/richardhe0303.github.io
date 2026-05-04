@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automatic Rubbish Compactor Bin — Richard He</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+<style>
+:root {
+  --bg-primary:#08080d; --bg-card:#111118; --border:#1e1e2a;
+  --accent:#3dd8c5; --accent-dim:rgba(61,216,197,0.12); --accent-glow:rgba(61,216,197,0.25);
+  --text-primary:#e4e4ed; --text-secondary:#8888a0; --text-muted:#55556a; --white:#ffffff;
+  --font-display:'Syne',sans-serif; --font-body:'DM Sans',sans-serif; --font-mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;opacity:0.025;z-index:9999;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 0;background:rgba(8,8,13,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+nav .container{display:flex;align-items:center;justify-content:space-between;}
+nav .logo{font-family:var(--font-display);font-weight:800;font-size:1.15rem;color:var(--white);text-decoration:none;}
+nav ul{list-style:none;display:flex;gap:2rem;}
+nav a{color:var(--text-secondary);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color 0.2s;}
+nav a:hover,nav a.active{color:var(--accent);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text-primary);}
+.page-header{padding-top:8rem;padding-bottom:3rem;border-bottom:1px solid var(--border);}
+.section-label{font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.75rem;}
+.section-title{font-family:var(--font-display);font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:1rem;}
+.section-subtitle{color:var(--text-secondary);max-width:620px;}
+footer{padding:2rem 0;border-top:1px solid var(--border);text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);}
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+@media(max-width:900px){nav ul{display:none;}nav ul.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(8,8,13,0.97);padding:1.5rem 2rem;gap:1rem;border-bottom:1px solid var(--border);}.hamburger{display:flex;}}
+
+.project-hero{padding:4rem 0 3rem;border-bottom:1px solid var(--border);}
+.back-link{display:inline-block;font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);text-decoration:none;margin-bottom:1.5rem;}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
+.hero-media{min-height:360px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.hero-media img{width:100%;height:100%;object-fit:cover;}
+.hero-media img.cad-render{object-fit:contain;padding:2.5rem;filter:drop-shadow(0 18px 28px rgba(0,0,0,0.45));}
+.hero-media.hero-compare{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;align-items:stretch;justify-content:stretch;}
+.compare-panel{position:relative;min-height:360px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:rgba(13,13,20,0.35);}
+.compare-panel+ .compare-panel{border-left:1px solid var(--border);}
+.compare-panel img{width:100%;height:100%;display:block;}
+.compare-panel.cad-panel img{object-fit:contain;padding:0.4rem;transform:scale(2.55);transform-origin:center center;filter:drop-shadow(0 18px 28px rgba(0,0,0,0.45));}
+.compare-panel.prototype-panel img{object-fit:cover;}
+.compare-label{position:absolute;top:0.85rem;left:0.85rem;z-index:2;font-family:var(--font-mono);font-size:0.62rem;color:var(--accent);background:rgba(8,8,13,0.72);border:1px solid rgba(61,216,197,0.22);border-radius:4px;padding:0.25rem 0.5rem;text-transform:uppercase;letter-spacing:0.08em;}
+.compare-placeholder{width:100%;height:100%;min-height:360px;align-items:center;justify-content:center;text-align:center;padding:1rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);}
+.compare-placeholder em{font-size:0.68rem;color:var(--text-muted);}
+@media(max-width:600px){.hero-media.hero-compare{grid-template-columns:1fr;}.compare-panel+ .compare-panel{border-left:none;border-top:1px solid var(--border);}.compare-panel,.compare-placeholder{min-height:230px;}}
+.placeholder{font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);text-align:center;padding:2rem;}
+.project-tag{display:inline-block;font-family:var(--font-mono);font-size:0.7rem;color:var(--accent);background:var(--accent-dim);padding:0.25rem 0.7rem;border-radius:3px;margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.08em;width:fit-content;}
+.hero-copy h1{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);line-height:1.1;margin-bottom:1rem;}
+.hero-copy p{color:var(--text-secondary);margin-bottom:1.2rem;}
+.project-jump-links{display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1.5rem;}
+.project-jump-links a{font-size:0.86rem;font-weight:600;color:var(--accent);text-decoration:none;padding:0.55rem 1rem;border:1px solid var(--accent);border-radius:5px;transition:all 0.2s;}
+.project-jump-links a:hover{background:var(--accent);color:var(--bg-primary);box-shadow:0 0 20px var(--accent-glow);}
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-top:1.5rem;}
+.spec-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1rem;}
+.spec-card .label{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;}
+.spec-card .value{font-family:var(--font-display);font-weight:700;color:var(--accent);margin-top:0.2rem;}
+.content-section{padding:4rem 0;border-bottom:1px solid var(--border);}
+.section-grid{display:grid;grid-template-columns:240px 1fr;gap:3rem;}
+.section-grid h2{font-family:var(--font-display);font-size:1.4rem;}
+.content-block{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:2rem;margin-bottom:1.5rem;}
+.content-block h3{font-family:var(--font-display);font-size:1.05rem;color:var(--accent);margin-bottom:0.75rem;}
+.content-block p,.content-block li{color:var(--text-secondary);font-size:0.95rem;}
+.content-block ul{list-style:none;padding:0;}
+.content-block li{margin-bottom:0.45rem;}
+.content-block li::before{content:'→ ';color:var(--accent);font-weight:600;}
+.challenge-card{display:grid;grid-template-columns:1.1fr 0.9fr;gap:2rem;align-items:center;}
+.problem-visual{min-height:220px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,rgba(61,216,197,0.08),transparent 65%);border:1px solid rgba(61,216,197,0.16);border-radius:10px;overflow:hidden;}
+.problem-visual img{width:100%;height:100%;min-height:220px;object-fit:cover;display:block;}
+.problem-visual svg{width:min(300px,100%);height:auto;display:block;}
+.problem-visual .bin-line{stroke:var(--accent);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.problem-visual .bin-fill{fill:rgba(61,216,197,0.12);stroke:rgba(61,216,197,0.55);stroke-width:2;}
+.problem-visual .waste{fill:#e4e4ed;opacity:0.85;}
+.problem-visual .waste-dim{fill:#8888a0;opacity:0.65;}
+.problem-visual .waste-accent{fill:var(--accent);opacity:0.8;}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+.gallery-slot{aspect-ratio:4/3;background:var(--bg-card);border:1px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.gallery-slot img{width:100%;height:100%;object-fit:cover;}
+.next-link{display:inline-block;color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:5px;padding:0.55rem 1rem;font-weight:600;font-size:0.86rem;}
+.next-link:hover{background:var(--accent);color:var(--bg-primary);}
+
+.mechanism-image-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:1.5rem;}
+.mechanism-image-card img{width:100%;height:auto;display:block;object-fit:contain;}
+
+.side-video-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:2rem;box-shadow:0 8px 30px rgba(0,0,0,0.25);}
+.side-video-card video{width:100%;display:block;aspect-ratio:9/16;object-fit:cover;background:#0d0d14;}
+.side-video-caption{padding:0.85rem 1rem;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;}
+.side-video-caption span{color:var(--accent);}
+@media(max-width:900px){.side-video-card video{aspect-ratio:16/9;}}
+
+.diagram-frame{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;min-height:360px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.diagram-frame img{width:100%;height:100%;object-fit:contain;padding:1.5rem;}
+.legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem 2rem;}
+.legend-item{display:grid;grid-template-columns:2rem 1fr;gap:0.6rem;color:var(--text-secondary);font-size:0.92rem;line-height:1.45;}
+.legend-num{font-family:var(--font-mono);color:var(--accent);font-size:0.8rem;padding-top:0.1rem;}
+.legend-item strong{color:var(--text-primary);font-weight:700;}
+@media(max-width:700px){.legend-grid{grid-template-columns:1fr;}.legend-item{grid-template-columns:1.6rem 1fr;}}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.result-grid-three{grid-template-columns:1fr;gap:1rem;}
+.result-wide-card{display:grid;grid-template-columns:190px 1fr;gap:2rem;align-items:start;margin-bottom:0;}
+.result-wide-card h3{margin-bottom:0;}
+.result-wide-card ul{display:grid;gap:0.2rem;}
+@media(max-width:900px){.result-grid,.result-grid-three{grid-template-columns:1fr;}.result-wide-card{grid-template-columns:1fr;gap:0.75rem;}.diagram-frame{min-height:260px;}.challenge-card{grid-template-columns:1fr;}.problem-visual{min-height:200px;}}
+@media(max-width:900px){.hero-grid,.section-grid{grid-template-columns:1fr;}.hero-media{min-height:260px;}.spec-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.spec-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="index.html" class="logo">Richard He</a>
+    <button class="hamburger" onclick="document.querySelector('nav ul').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
+    <ul>
+      <li><a href="index.html">About</a></li>
+      <li><a href="projects.html" class="active">Projects</a></li>
+      <li><a href="skills.html">Skills</a></li>
+      <li><a href="simulator.html">Ball Launcher Sim</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="https://www.linkedin.com/in/richard-he33/" target="_blank">LinkedIn ↗</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="project-hero" style="padding-top:8rem;">
+  <div class="container">
+    <a href="projects.html" class="back-link">← Back to Projects</a>
+    <div class="hero-grid fade-in">
+      <div class="hero-media hero-compare">
+        <div class="compare-panel cad-panel">
+          <span class="compare-label">CAD render</span>
+          <img src="images/compactor/compactor-hero-cad.png" alt="Compactor hero CAD render" onerror="this.onerror=null;this.src='images/compactor/compactor-hero-cad.png';">
+        </div>
+        <div class="compare-panel prototype-panel">
+          <span class="compare-label">Prototype</span>
+          <img src="images/compactor/compactor-hero-prototype.jpg" alt="Compactor hero prototype photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="compare-placeholder" style="display:none;">Add prototype photo<br><em>images/compactor/compactor-hero-prototype.jpg</em></div>
+        </div>
+      </div>
+      <div class="hero-copy">
+        <span class="project-tag">Personal Project</span>
+        <h1>Automatic Rubbish Compactor Bin</h1>
+        <p>A compact household rubbish bin with an integrated automatic compaction system, designed to hold more waste with fewer bag changes and no manual pressing. Built as a small product design project focused on mechanism layout, packaging, fabrication, and iteration.</p>
+        <div class="project-jump-links">
+          <a href="#problem">Problem</a>
+          <a href="#mechanism">Mechanism</a>
+          <a href="#diagram">Diagram</a>
+          <a href="#result">Result</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="content-section" id="problem">
+  <div class="container">
+    <div class="section-grid fade-in">
+      <div>
+        <div class="section-label">Problem</div>
+        <h2>What it needed to solve</h2>
+      </div>
+      <div>
+        <div class="content-block challenge-card">
+          <div>
+            <h3>Design challenge</h3>
+            <p>Household rubbish bins fill quickly with bulky waste. The goal was to design a compact bin that could reduce bag changes without requiring the user to manually press waste down.</p>
+          </div>
+          <div class="problem-visual">
+            <img src="images/compactor/compactor-overfilled-bin.png" alt="Overfilled household rubbish bin">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="mechanism">
+  <div class="container">
+    <div class="section-grid fade-in">
+      <div>
+        <div class="section-label">Mechanism</div>
+        <h2>How the prototype works</h2>
+        <div class="side-video-card">
+          <video id="compactorDemoVideo" controls muted playsinline loop preload="auto" poster="images/compactor/compactor-demo-poster.jpg">
+            <source src="images/compactor/compactor-demo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <div class="side-video-caption"><span>Demo</span> prototype compaction cycle</div>
+        </div>
+      </div>
+      <div>
+        <div class="content-block">
+          <h3>Compaction system</h3>
+          <ul>
+            <li>150 mm stroke linear actuator drives the press plate</li>
+            <li>Dual guide rails keep the press plate level under uneven loads</li>
+            <li>Reverse polarity switch controls up and down motion</li>
+            <li>12 V DC input with inline fuse for overcurrent protection</li>
+          </ul>
+        </div>
+        <div class="mechanism-image-card">
+          <img src="images/compactor/compactor-mechanism.jpg" alt="Automatic rubbish compactor mechanism sequence showing CAD layout and prototype compaction stages">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="diagram">
+  <div class="container">
+    <div class="section-grid fade-in">
+      <div>
+        <div class="section-label">Diagram</div>
+        <h2>Layout and system view</h2>
+      </div>
+      <div>
+        <div class="diagram-frame">
+          <img src="images/compactor/compactor-diagram.png" alt="Automatic rubbish compactor bin layout and system diagram">
+        </div>
+        <div class="content-block" style="margin-top:1.5rem;">
+          <h3>Diagram legend</h3>
+          <div class="legend-grid">
+            <div class="legend-item"><span class="legend-num">1</span><span><strong>Linear actuator</strong> 70 N, 150 mm stroke, built in limits</span></div>
+            <div class="legend-item"><span class="legend-num">2</span><span><strong>Reverse polarity switch</strong> up/down control</span></div>
+            <div class="legend-item"><span class="legend-num">3</span><span><strong>Master on/off switch</strong></span></div>
+            <div class="legend-item"><span class="legend-num">4</span><span><strong>DC barrel jack</strong> 12 V DC input connector</span></div>
+            <div class="legend-item"><span class="legend-num">5</span><span><strong>Inline fuse</strong> overcurrent protection</span></div>
+            <div class="legend-item"><span class="legend-num">6</span><span><strong>Switch mounting box</strong></span></div>
+            <div class="legend-item"><span class="legend-num">7</span><span><strong>Guide carriages (x2)</strong> slide on rails to keep compaction plates aligned</span></div>
+            <div class="legend-item"><span class="legend-num">8</span><span><strong>Compaction plates (x2)</strong> compress waste during the compaction cycle</span></div>
+            <div class="legend-item"><span class="legend-num">9</span><span><strong>Adjustable bin floor</strong> suits different bag sizes</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="result">
+  <div class="container">
+    <div class="section-grid fade-in">
+      <div>
+        <div class="section-label">Result</div>
+        <h2>What V1 proved</h2>
+      </div>
+      <div class="result-grid result-grid-three">
+        <div class="content-block result-wide-card">
+          <h3>Result</h3>
+          <ul>
+            <li>Prototype demonstrated automated compaction and validated the overall packaging</li>
+            <li>Dual guides improved alignment, but slight uneven travel remained under load with a single actuator</li>
+          </ul>
+        </div>
+        <div class="content-block result-wide-card">
+          <h3>Technical spec</h3>
+          <ul>
+            <li>70 N actuator force</li>
+            <li>150 mm stroke</li>
+            <li>40 s full cycle</li>
+            <li>8 to 11 L adjustable bag volume</li>
+          </ul>
+        </div>
+        <div class="content-block result-wide-card">
+          <h3>Improvement</h3>
+          <ul>
+            <li>Dual guides improved alignment, but slight uneven travel remained under uneven load with a single actuator</li>
+            <li>V2 will use two synchronized lead screws driven by one motor and belt</li>
+            <li>The goal is to increase compaction force so the rubbish is compressed more tightly, while keeping the press plate level and improving repeatability</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer><div class="container">© 2025 Richard He · Built with care, hosted on GitHub Pages</div></footer>
+
+<script>
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.12});
+document.querySelectorAll('.fade-in').forEach(el=>observer.observe(el));
+document.querySelectorAll('nav ul a').forEach(a=>{a.addEventListener('click',()=>document.querySelector('nav ul').classList.remove('open'));});
+
+const demoVideo = document.getElementById('compactorDemoVideo');
+let demoPausedByUser = false;
+
+if (demoVideo) {
+  demoVideo.addEventListener('pause', () => {
+    if (!demoVideo.dataset.autoPausing) demoPausedByUser = true;
+  });
+
+  demoVideo.addEventListener('play', () => {
+    demoPausedByUser = false;
+  });
+
+  const videoObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !demoPausedByUser) {
+        demoVideo.play().catch(() => {});
+      }
+    });
+  }, { threshold: 0.35 });
+
+  videoObserver.observe(demoVideo);
+}
+</script>
+
+</body>
+</html>

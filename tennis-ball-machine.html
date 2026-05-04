@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tennis Ball Pitching Machine — Richard He</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+<style>
+:root {
+  --bg-primary:#08080d; --bg-card:#111118; --border:#1e1e2a;
+  --accent:#3dd8c5; --accent-dim:rgba(61,216,197,0.12); --accent-glow:rgba(61,216,197,0.25);
+  --text-primary:#e4e4ed; --text-secondary:#8888a0; --text-muted:#55556a; --white:#ffffff;
+  --font-display:'Syne',sans-serif; --font-body:'DM Sans',sans-serif; --font-mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;opacity:0.025;z-index:9999;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 0;background:rgba(8,8,13,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+nav .container{display:flex;align-items:center;justify-content:space-between;}
+nav .logo{font-family:var(--font-display);font-weight:800;font-size:1.15rem;color:var(--white);text-decoration:none;}
+nav ul{list-style:none;display:flex;gap:2rem;}
+nav a{color:var(--text-secondary);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color 0.2s;}
+nav a:hover,nav a.active{color:var(--accent);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text-primary);}
+footer{padding:2rem 0;border-top:1px solid var(--border);text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);}
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+
+.project-hero{padding:8rem 0 4rem;border-bottom:1px solid var(--border);}
+.back-link{display:inline-block;font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);text-decoration:none;margin-bottom:2rem;}
+.back-link:hover{color:var(--white);}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
+.hero-media{height:360px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.hero-media img{width:100%;height:100%;object-fit:contain;padding:1.6rem;filter:drop-shadow(0 18px 28px rgba(0,0,0,0.45));transform:scale(1.18);}
+.placeholder{font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);text-align:center;padding:2rem;}
+.hero-copy h1{font-family:var(--font-display);font-size:clamp(2.2rem,5vw,4rem);line-height:1.05;margin-bottom:1.4rem;letter-spacing:-0.04em;}
+.hero-copy p{color:var(--text-secondary);margin-bottom:1.5rem;font-size:1rem;max-width:560px;}
+.nav-buttons{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:0.75rem;margin-top:1.8rem;}
+.nav-buttons a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:48px;padding:0.65rem 0.9rem;border:1px solid var(--accent);border-radius:6px;color:var(--accent);text-decoration:none;font-weight:700;font-size:0.86rem;transition:all 0.2s;}
+.nav-buttons a:hover{background:var(--accent);color:var(--bg-primary);box-shadow:0 0 20px var(--accent-glow);}
+.content-section{padding:4rem 0;border-bottom:1px solid var(--border);}
+.section-grid{display:grid;grid-template-columns:240px 1fr;gap:3rem;align-items:start;}
+.section-label{font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.75rem;}
+.section-grid h2{font-family:var(--font-display);font-size:1.55rem;line-height:1.25;}
+.content-block{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:2rem;margin-bottom:1.5rem;}
+.content-block h3{font-family:var(--font-display);font-size:1.05rem;color:var(--accent);margin-bottom:0.75rem;}
+.content-block p,.content-block li{color:var(--text-secondary);font-size:0.95rem;}
+.content-block ul{list-style:none;padding:0;}
+.content-block li{margin-bottom:0.45rem;}
+.content-block li::before{content:'→ ';color:var(--accent);font-weight:600;}
+.wide-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:2rem;margin-bottom:1.5rem;}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+.gallery-slot{aspect-ratio:4/3;background:var(--bg-card);border:1px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.gallery-slot img{width:100%;height:100%;object-fit:cover;}
+
+.section-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-bottom:1.5rem;}
+.section-images.three{grid-template-columns:repeat(3,minmax(0,1fr));}
+.section-images.one{grid-template-columns:1fr;}
+.image-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.image-card img{width:100%;height:100%;display:block;object-fit:contain;background:#0d0d14;cursor:pointer;}
+.analysis-stack{display:grid;grid-template-columns:1fr;gap:1.5rem;margin-bottom:1.5rem;}
+.analysis-item{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.analysis-item .image-card{border:none;border-radius:0;border-bottom:1px solid var(--border);}
+.analysis-item .image-card.wide{aspect-ratio:16/9;}
+.analysis-copy{padding:1.5rem 1.8rem;}
+.analysis-copy h3{font-family:var(--font-display);font-size:1.05rem;color:var(--accent);margin-bottom:0.7rem;}
+.analysis-copy p{color:var(--text-secondary);font-size:0.95rem;}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:10000;display:none;align-items:center;justify-content:center;padding:2rem;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:90vw;max-height:84vh;object-fit:contain;border-radius:10px;border:1px solid var(--border);background:#0d0d14;}
+.lightbox-close,.lightbox-prev,.lightbox-next{position:absolute;border:1px solid rgba(61,216,197,0.45);background:rgba(17,17,24,0.8);color:var(--accent);border-radius:999px;cursor:pointer;font-family:var(--font-display);font-weight:700;display:flex;align-items:center;justify-content:center;}
+.lightbox-close{top:1.5rem;right:1.5rem;width:42px;height:42px;font-size:1.4rem;}
+.lightbox-prev,.lightbox-next{top:50%;transform:translateY(-50%);width:52px;height:52px;font-size:2rem;}
+.lightbox-prev{left:1.5rem;}
+.lightbox-next{right:1.5rem;}
+.lightbox-caption{position:absolute;left:50%;bottom:1rem;transform:translateX(-50%);font-family:var(--font-mono);font-size:0.75rem;color:var(--text-secondary);text-align:center;max-width:80vw;}
+.image-card.landscape{aspect-ratio:4/3;}
+.image-card.wide{aspect-ratio:16/9;}
+.image-caption{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);padding:0.7rem 0.8rem;border-top:1px solid var(--border);text-transform:uppercase;letter-spacing:0.05em;}
+
+.sim-card{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;}
+.sim-card a{color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:6px;padding:0.6rem 1rem;font-weight:700;font-size:0.88rem;}
+.sim-card a:hover{background:var(--accent);color:var(--bg-primary);}
+@media(max-width:900px){.section-images,.section-images.three{grid-template-columns:1fr;}nav ul{display:none;}nav ul.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(8,8,13,0.97);padding:1.5rem 2rem;gap:1rem;border-bottom:1px solid var(--border);}.hamburger{display:flex;}.hero-grid,.section-grid{grid-template-columns:1fr;}.hero-media{height:300px;}.nav-buttons{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.nav-buttons{grid-template-columns:1fr;}.hero-copy h1{font-size:2.3rem;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="index.html" class="logo">Richard He</a>
+    <button class="hamburger" onclick="document.querySelector('nav ul').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
+    <ul>
+      <li><a href="index.html">About</a></li>
+      <li><a href="projects.html" class="active">Projects</a></li>
+      <li><a href="skills.html">Skills</a></li>
+      <li><a href="simulator.html">Ball Launcher Sim</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="https://www.linkedin.com/in/richard-he33/" target="_blank">LinkedIn ↗</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="project-hero">
+  <div class="container">
+    <a href="projects.html" class="back-link">← Back to Projects</a>
+    <div class="hero-grid fade-in">
+      <div class="hero-media">
+        <img src="images/pitcher/pitcher-mechanism-02.png" alt="Tennis ball pitching machine CAD render" onerror="this.onerror=null;this.src='images/pitcher-render.png';">
+      </div>
+      <div class="hero-copy">
+        <h1>Tennis Ball Pitching Machine</h1>
+        <p>A three wheel tennis ball launcher designed to create realistic shot variation through independent wheel speed control and adjustable pitch and yaw aiming.</p>
+        <div class="nav-buttons">
+          <a href="simulator.html">Try Simulator →</a>
+          <a href="#analysis">Analysis</a>
+          <a href="#pitching-mechanism">Pitching Mechanism</a>
+          <a href="#motor-assembly">Motor Assembly</a>
+          <a href="#aiming-mechanism">Aiming Mechanism</a>
+          <a href="#result">Result</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="analysis">
+  <div class="container">
+    <div class="section-grid">
+      <div><div class="section-label">Analysis</div><h2>Why three wheels</h2></div>
+      <div>
+        <div class="analysis-stack">
+          <div class="analysis-item">
+            <div class="image-card wide"><img src="images/pitcher/pitcher-analysis-01.png" alt="Spin range comparison between two wheel and three wheel launcher concepts"><div class="image-caption">Analysis 01</div></div>
+            <div class="analysis-copy">
+              <h3>Spin Range Comparison Between 2 Wheel and 3 Wheel Launcher Concepts</h3>
+              <p>This analysis compared a fixed 2 wheel launcher against a fixed 3 wheel triangular launcher at the same ball speed and wheel speed limits. The result showed that the 3 wheel layout could generate a much wider range of controllable spin states, including vertical spin, sidespin, and mixed spin combinations, which justified selecting the 3 wheel concept for the design.</p>
+            </div>
+          </div>
+          <div class="analysis-item">
+            <div class="image-card wide"><img src="images/pitcher/pitcher-analysis-02.png" alt="Fixed compression optimization for three wheel launcher"><div class="image-caption">Analysis 02</div></div>
+            <div class="analysis-copy">
+              <h3>Fixed Compression Optimization for 3 Wheel Launcher</h3>
+              <p>This analysis swept wheel gap values to find one fixed compression setting that balanced grip, slip resistance, reaction force, and repeatability across representative shot types. A nominal compression of about 5.5 mm was selected as the best compromise because it provided the widest usable operating window without excessive load.</p>
+            </div>
+          </div>
+          <div class="analysis-item">
+            <div class="image-card wide"><img src="images/pitcher/pitcher-analysis-03.png" alt="Motor drive ratio trade study for repeatable shot delivery"><div class="image-caption">Analysis 03</div></div>
+            <div class="analysis-copy">
+              <h3>Motor Drive Ratio Trade Study for Repeatable Shot Delivery</h3>
+              <p>This analysis compared direct drive, reduction, and step up drive ratios using the selected wheel compression, wheel inertia estimate, and pancake motor torque speed data. The result showed that 1 to 1 direct drive gave the best overall balance of usable shot range, motor speed requirement, and launch severity for the proof of concept machine.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="pitching-mechanism">
+  <div class="container">
+    <div class="section-grid">
+      <div><div class="section-label">Mechanism</div><h2>Pitching mechanism</h2></div>
+      <div>
+        <div class="section-images">
+          <div class="image-card landscape"><img src="images/pitcher/pitcher-mechanism-01.png" alt="Pitching mechanism front layout"><div class="image-caption">Mechanism 01</div></div>
+          <div class="image-card landscape"><img src="images/pitcher/pitcher-mechanism-02.png" alt="Three wheel pitching mechanism CAD assembly"><div class="image-caption">Mechanism 02</div></div>
+        </div>
+        <div class="content-block">
+          <h3>Three wheel layout</h3>
+          <ul>
+            <li>Three wheel arrangement used to control launch speed and spin direction</li>
+            <li>Independent wheel speed control creates topspin, backspin, sidespin, and mixed spin shots</li>
+            <li>Adjustable wheel mounting slots support grip and contact tuning during assembly</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="motor-assembly">
+  <div class="container">
+    <div class="section-grid">
+      <div><div class="section-label">Drive</div><h2>Motor assembly</h2></div>
+      <div>
+        <div class="section-images">
+          <div class="image-card landscape"><img src="images/pitcher/pitcher-motor-assembly-01.png" alt="Motor assembly CAD side view"><div class="image-caption">Motor assembly 01</div></div>
+          <div class="image-card landscape"><img src="images/pitcher/pitcher-motor-assembly-02.png" alt="Motor assembly CAD exploded view"><div class="image-caption">Motor assembly 02</div></div>
+        </div>
+        <div class="content-block">
+          <h3>Motor and belt drive</h3>
+          <ul>
+            <li>Three 350 W pancake motors driving 10 inch wheels</li>
+            <li>V belt pulley system selected for smoother torque transfer than shaft couplings</li>
+            <li>Drive ratio selected to support high rim speed while keeping recovery time practical</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="aiming-mechanism">
+  <div class="container">
+    <div class="section-grid">
+      <div><div class="section-label">Aiming</div><h2>Aiming mechanism</h2></div>
+      <div>
+        <div class="section-images">
+          <div class="image-card landscape"><img src="images/pitcher/pitcher-aiming-mechanism-01.png" alt="Aiming mechanism CAD assembly"><div class="image-caption">Aiming mechanism 01</div></div>
+          <div class="image-card landscape"><img src="images/pitcher/pitcher-aiming-mechanism-02.png" alt="Aiming mechanism front view"><div class="image-caption">Aiming mechanism 02</div></div>
+        </div>
+        <div class="content-block">
+          <h3>Pitch and yaw adjustment</h3>
+          <ul>
+            <li>Yaw adjustment uses a linear actuator between the base and rotating platform</li>
+            <li>Pitch adjustment uses a second actuator to tilt the launcher vertically</li>
+            <li>Gas strut helps counter system weight and reduce actuator load</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section" id="result">
+  <div class="container">
+    <div class="section-grid">
+      <div><div class="section-label">Result</div><h2>What the project proved</h2></div>
+      <div>
+        <div class="section-images one">
+          <div class="image-card wide"><img src="images/pitcher/pitcher-result-01.jpg" alt="Completed tennis ball pitching machine prototype"><div class="image-caption">Prototype result</div></div>
+        </div>
+        <div class="content-block">
+          <h3>Outcome</h3>
+          <ul>
+            <li>Validated the three wheel launcher concept as the preferred architecture for wider and more controllable spin output</li>
+            <li>Established a working design baseline including wheel compression at about 5.5 mm and a 1 to 1 drive ratio for consistent shot delivery</li>
+            <li>Demonstrated repeatable shot generation across a range of spin types including topspin, backspin, and sidespin</li>
+            <li>Delivered a functional pitching and aiming mechanism with adjustable yaw and pitch range of motion</li>
+            <li>Produced CAD models and technical drawings for over 10 custom components, enabling in house manufacturing and assembly</li>
+            <li>Built and assembled a working prototype using machining, waterjet, and 3D printed parts</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close image">×</button>
+  <button class="lightbox-prev" id="lightboxPrev" aria-label="Previous image">‹</button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-next" id="lightboxNext" aria-label="Next image">›</button>
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<footer><div class="container">© 2025 Richard He · Built with care, hosted on GitHub Pages</div></footer>
+
+<script>
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.12});
+document.querySelectorAll('.fade-in').forEach(el=>observer.observe(el));
+document.querySelectorAll('nav ul a').forEach(a=>{a.addEventListener('click',()=>document.querySelector('nav ul').classList.remove('open'));});
+
+const lightbox=document.getElementById('lightbox');
+const lightboxImg=document.getElementById('lightboxImg');
+const lightboxCaption=document.getElementById('lightboxCaption');
+const closeBtn=document.getElementById('lightboxClose');
+const prevBtn=document.getElementById('lightboxPrev');
+const nextBtn=document.getElementById('lightboxNext');
+const lightboxImages=[...document.querySelectorAll('.hero-media img, .image-card img')];
+let currentImageIndex=0;
+
+function openLightbox(index){
+  currentImageIndex=index;
+  const img=lightboxImages[currentImageIndex];
+  lightboxImg.src=img.currentSrc || img.src;
+  lightboxImg.alt=img.alt || '';
+  const caption=img.closest('.image-card')?.querySelector('.image-caption')?.textContent || img.alt || '';
+  lightboxCaption.textContent=caption;
+  lightbox.classList.add('open');
+  lightbox.setAttribute('aria-hidden','false');
+}
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  lightbox.setAttribute('aria-hidden','true');
+  lightboxImg.src='';
+}
+function changeImage(step){
+  currentImageIndex=(currentImageIndex+step+lightboxImages.length)%lightboxImages.length;
+  openLightbox(currentImageIndex);
+}
+lightboxImages.forEach((img,index)=>{img.addEventListener('click',()=>openLightbox(index));});
+closeBtn.addEventListener('click',closeLightbox);
+prevBtn.addEventListener('click',e=>{e.stopPropagation();changeImage(-1);});
+nextBtn.addEventListener('click',e=>{e.stopPropagation();changeImage(1);});
+lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeLightbox();});
+document.addEventListener('keydown',e=>{
+  if(!lightbox.classList.contains('open'))return;
+  if(e.key==='Escape')closeLightbox();
+  if(e.key==='ArrowLeft')changeImage(-1);
+  if(e.key==='ArrowRight')changeImage(1);
+});
+</script>
+
+</body>
+</html>
